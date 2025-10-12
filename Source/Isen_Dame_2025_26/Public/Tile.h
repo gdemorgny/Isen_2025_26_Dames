@@ -1,0 +1,34 @@
+// Fill out your copyright notice in the Description page of Project Settings.
+
+#pragma once
+
+#include "CoreMinimal.h"
+#include "ColorComponent.h"
+#include "IColorControl.h"
+#include "GameFramework/Actor.h"
+#include "Tile.generated.h"
+
+
+
+UCLASS()
+class ISEN_DAME_2025_26_API ATile : public AActor, public IIColorControl
+{
+	GENERATED_BODY()
+	
+public:	
+	// Sets default values for this actor's properties
+	ATile();
+// TODO : acces à un objet visuel staticmesh/actor
+	UPROPERTY(EditAnywhere)
+	UStaticMeshComponent* StaticMesh;
+	
+protected:
+	// Called when the game starts or when spawned
+	virtual void BeginPlay() override;
+
+public:	
+	// Called every frame
+	virtual void Tick(float DeltaTime) override;
+	
+	virtual void ChangeColor(EColorType NewColor) override;
+};

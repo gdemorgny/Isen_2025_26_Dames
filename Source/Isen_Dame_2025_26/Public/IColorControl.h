@@ -1,0 +1,28 @@
+// Fill out your copyright notice in the Description page of Project Settings.
+
+#pragma once
+
+#include "CoreMinimal.h"
+#include "UObject/Interface.h"
+#include "ColorComponent.h"
+#include "IColorControl.generated.h"
+
+// This class does not need to be modified.
+UINTERFACE(MinimalAPI)
+class UIColorControl : public UInterface
+{
+	GENERATED_BODY()
+};
+
+/**
+ * 
+ */
+class ISEN_DAME_2025_26_API IIColorControl
+{
+	GENERATED_BODY()
+
+	// Add interface functions to this class. This is the class that will be inherited to implement this interface.
+public:
+	
+	virtual void ChangeColor(EColorType NewColor);
+};
