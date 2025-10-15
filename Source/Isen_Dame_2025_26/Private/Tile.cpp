@@ -30,5 +30,21 @@ void ATile::ChangeColor(EColorType NewColor)
 	FindComponentByClass<UColorComponent>()->ChangeMaterial(NewColor,StaticMesh);
 }
 
+void ATile::Select()
+{
+	FindComponentByClass<UColorComponent>()->BaseMaterial = Cast<UMaterialInstance>(StaticMesh->GetMaterial(0));
+	ChangeColor(EColorType::Selected);
+}
+
+void ATile::Unselect()
+{
+	ChangeColor(EColorType::Empty);
+}
+
+bool ATile::IsAPawn()
+{
+	return false;
+}
+
 
 

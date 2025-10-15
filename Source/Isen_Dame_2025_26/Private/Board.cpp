@@ -1,7 +1,8 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-#include "ColorComponent.h"
 #include "Board.h"
+#include "ColorComponent.h"
+
 
 
 
@@ -69,7 +70,7 @@ void ABoard::InitializeBoard()
 					if(i < 4 || i > 5)
 					{
 						ADamePawn* newPawn = GetWorld()->SpawnActor<ADamePawn>(BaseDamePawn,NewPos + FVector::UpVector*140.0f,PawnRot,parameters);
-						
+						newPawn->Board = this;
 						PawnDatas[pawnDatasIndex].XCoord = j;
 						PawnDatas[pawnDatasIndex].YCoord = i;
 						PawnDatas[pawnDatasIndex].Pawn = newPawn;
@@ -102,5 +103,148 @@ void ABoard::InitializeBoard()
 		UE_LOG(LogTemp,Warning,TEXT("Tile spawn !"))
 	}
 	
+}
+
+TArray<ATile*> ABoard::CheckMoves(uint8 Xpos, uint8 Ypos, int32 ActualPlayer)
+{
+	TArray<ATile*> TilesAllowed;	
+	// TODO : tester d'abord le fait de manger avant le deplacement
+	//Positions à tester
+	TArray<int32> XPosToTests = {-1,1};
+	TArray<int32> YPosToTests = {ActualPlayer,ActualPlayer};
+
+	for(int i = 0; i < XPosToTests.Num(); i++)
+	{
+		if (IsTileInBoardLimit(Xpos+XPosToTests[i],Ypos+YPosToTests[i])
+			&& IsTileInBoardLimit(Xpos+XPosToTests[i]*2,Ypos+YPosToTests[i]*2)) 
+		{
+			if(IsOtherPlayerOnTile(Xpos+XPosToTests[i],
+				Ypos+YPosToTests[i],ActualPlayer)
+				&& IsTileEmpty(Xpos+XPosToTests[i]*2,
+				Ypos+YPosToTests[i]*2))
+			{
+				TilesAllowed.Add(Rows[Ypos+YPosToTests[i]*2].Column[Xpos+XPosToTests[i]*2]);
+			}
+		}
+	}
+	if(TilesAllowed.Num() == 0)
+	{
+		for(int i = 0; i < XPosToTests.Num(); i++)
+		{
+			if (IsTileInBoardLimit(Xpos+XPosToTests[i],Ypos+YPosToTests[i])) 
+			{
+				if(IsTileEmpty(Xpos+XPosToTests[i],
+					Ypos+YPosToTests[i]))
+				{
+					TilesAllowed.Add(Rows[Ypos+YPosToTests[i]].Column[Xpos+XPosToTests[i]]);
+				}
+			}
+		}
+	}
+	return TilesAllowed;
+}
+
+void ABoard::HighlightAllAllowedTiles(TArray<ATile*> Tiles)
+{
+	for(int i = 0; i < Tiles.Num(); i++)
+	{
+		TScriptInterface<ISelectable>(Tiles[i])->Select();
+	}
+}
+
+void ABoard::ShowMoves(ADamePawn* Pawn)
+{
+	uint8 Xpos = GetPawnXposValue(Pawn);
+	uint8 YPos = GetPawnYposValue(Pawn);
+	int32 player = GetPlayerByPawn(Pawn);
+	if(Xpos == -1 || YPos == -1 || player == 0)
+	{
+		UE_LOG(LogTemp,Error,TEXT("Pawn Not in PawnList ! (%d,%d,%d)"),Xpos,YPos,player);
+		return;
+	}
+	MoveTiles =  CheckMoves(Xpos,YPos,player);
+	if (MoveTiles.Num() > 0)
+	{
+		HighlightAllAllowedTiles(MoveTiles);
+	}
+}
+
+bool ABoard::IsTileEmpty(uint8 Xpos, uint8 YPpos)
+{
+	bool bIsEmpty = true;
+	for(int i = 0; i < PawnDatas.Num(); i++)
+	{
+		if(PawnDatas[i].XCoord == Xpos && PawnDatas[i].YCoord == YPpos)
+		{
+			bIsEmpty = false;
+			break;
+		}
+	}
+	return bIsEmpty;
+}
+
+bool ABoard::IsOtherPlayerOnTile(uint8 Xpos, uint8 Ypos, int32 Player)
+{
+	bool bIsOtherPlayerOnTile = false;
+	for(int i = 0; i < PawnDatas.Num(); i++)
+	{
+		if(PawnDatas[i].XCoord == Xpos
+			&& PawnDatas[i].YCoord == Ypos
+			&& PawnDatas[i].PlayerNumber != Player)
+		{
+			bIsOtherPlayerOnTile = true;
+			break;
+		}
+	}
+	return bIsOtherPlayerOnTile;
+	
+}
+
+bool ABoard::IsTileInBoardLimit(uint8 Xpos, uint8 Ypos)
+{
+	return Xpos > 0 && Xpos < BoardSize
+		&& Ypos > 0 && Ypos < BoardSize;
+}
+
+uint8 ABoard::GetPawnXposValue(ADamePawn* Pawn)
+{
+	uint8 xpos = -1;
+	for(int i = 0; i < PawnDatas.Num(); i++)
+	{
+		if(PawnDatas[i].Pawn == Pawn)
+		{
+			xpos = PawnDatas[i].XCoord;
+			break;
+		}
+	}
+	return xpos;
+}
+
+uint8 ABoard::GetPawnYposValue(ADamePawn* Pawn)
+{
+	uint8 ypos = -1;
+	for(int i = 0; i < PawnDatas.Num(); i++)
+	{
+		if(PawnDatas[i].Pawn == Pawn)
+		{
+			ypos = PawnDatas[i].YCoord;
+			break;
+		}
+	}
+	return ypos;
+}
+
+int32 ABoard::GetPlayerByPawn(ADamePawn* Pawn)
+{
+	int32 player = 0;
+	for(int i = 0; i < PawnDatas.Num(); i++)
+	{
+		if(PawnDatas[i].Pawn == Pawn)
+		{
+			player = PawnDatas[i].PlayerNumber;
+			break;
+		}
+	}
+	return player;
 }
 

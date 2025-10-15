@@ -52,6 +52,8 @@ public:
 	TArray<FColumns> Rows;
 	UPROPERTY(EditAnywhere)
 	TArray<FPawnData> PawnDatas;
+	UPROPERTY(EditAnywhere)
+	TArray<ATile*> MoveTiles;
 	
 protected:
 	// Called when the game starts or when spawned
@@ -63,5 +65,21 @@ public:
 	
 	UFUNCTION(BlueprintCallable)
 	void InitializeBoard();
+
+	UFUNCTION()
+	TArray<ATile*> CheckMoves(uint8 Xpos,uint8 YPpos, int32 ActualPlayer);
+
+	UFUNCTION()
+	void HighlightAllAllowedTiles(TArray<ATile*> Tiles);
+
+	UFUNCTION()
+	void ShowMoves(ADamePawn* Pawn);
 	
+private :
+	bool IsTileEmpty(uint8 Xpos,uint8 Ypos);
+	bool IsOtherPlayerOnTile(uint8 Xpos,uint8 Ypos, int32 Player);
+	bool IsTileInBoardLimit(uint8 Xpos,uint8 Ypos);
+	uint8 GetPawnXposValue(ADamePawn* Pawn);
+	uint8 GetPawnYposValue(ADamePawn* Pawn);
+	int32 GetPlayerByPawn(ADamePawn* Pawn);
 };

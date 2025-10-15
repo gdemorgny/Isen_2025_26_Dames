@@ -19,7 +19,9 @@ public:
 	ADamePawn();
 	UPROPERTY(EditAnywhere)
 	UStaticMeshComponent* StaticMesh;
-	
+	UPROPERTY(EditAnywhere)
+	class ABoard* Board;
+	// TODO : retrouver le nom de ce type de declaration
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;

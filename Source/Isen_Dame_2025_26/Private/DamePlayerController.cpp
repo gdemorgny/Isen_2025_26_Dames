@@ -49,12 +49,21 @@ void ADamePlayerController::TrySelect()
 		if(HitActor->Implements<USelectable>() &&
 			TScriptInterface<ISelectable>(HitActor)->IsAPawn())
 		{
+			if(SelectedPawn != nullptr && SelectedPawn != TScriptInterface<ISelectable>(HitActor))
+			{
+				SelectedPawn -> Unselect();
+			} 
 			SelectedPawn = TScriptInterface<ISelectable>(HitActor);
 			SelectedPawn->Select();
 			UE_LOG(LogTemp,Warning,TEXT("L'objet touché est %s"),*HitActor->GetName());
+			
+		} else if (SelectedPawn != nullptr)
+		{
+			SelectedPawn -> Unselect();
+			SelectedPawn = nullptr;
 		}
 		
-		//TODO : Select uniquement un pion en premiere selection
+		
 		//TODO : select un case seulement en seconde selection
 	}
 	

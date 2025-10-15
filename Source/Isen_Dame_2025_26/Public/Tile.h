@@ -5,13 +5,14 @@
 #include "CoreMinimal.h"
 #include "ColorComponent.h"
 #include "IColorControl.h"
+#include "Selectable.h"
 #include "GameFramework/Actor.h"
 #include "Tile.generated.h"
 
 
 
 UCLASS()
-class ISEN_DAME_2025_26_API ATile : public AActor, public IIColorControl
+class ISEN_DAME_2025_26_API ATile : public AActor, public IIColorControl, public ISelectable
 {
 	GENERATED_BODY()
 	
@@ -31,4 +32,8 @@ public:
 	virtual void Tick(float DeltaTime) override;
 	
 	virtual void ChangeColor(EColorType NewColor) override;
+
+	virtual void Select() override;
+	virtual void Unselect() override;
+	virtual bool IsAPawn() override;
 };

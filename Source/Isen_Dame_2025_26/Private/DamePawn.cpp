@@ -3,6 +3,8 @@
 
 #include "DamePawn.h"
 
+#include "Board.h"
+
 // Sets default values
 ADamePawn::ADamePawn()
 {
@@ -35,6 +37,7 @@ void ADamePawn::Select()
 	
 	FindComponentByClass<UColorComponent>()->BaseMaterial = Cast<UMaterialInstance>(StaticMesh->GetMaterial(0));
 	ChangeColor(EColorType::Selected);
+	Board->ShowMoves(this);
 }
 
 void ADamePawn::Unselect()
